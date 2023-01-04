@@ -1,0 +1,33 @@
+version: "3.3"
+services:
+  web:
+    build: ./app
+    ports:
+      - "6379-6385:5768"
+    env_file: .env
+    depends_on:
+      - redis
+    networks:
+      decoded_lan:
+
+  redis:
+    build: ./redis
+    command: sh -c "./entrypoint.sh"
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data:rw
+    networks:
+      decoded_lan:
+        ipv4_address: ${REDIS_HOST}
+
+
+volumes:
+  redis_data:
+
+networks:
+  decoded_lan:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
